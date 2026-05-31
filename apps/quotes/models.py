@@ -5,6 +5,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 from apps.common.models import TimeStampedModel
+from apps.quotes.validators import PHONE_NUMBER_VALIDATOR
 
 
 def generate_quote_reference() -> str:
@@ -113,6 +114,17 @@ class Option(TimeStampedModel):
 
 class Quote(TimeStampedModel):
     reference = models.CharField(max_length=32, unique=True, default=generate_quote_reference)
+    nom = models.CharField(
+        max_length=150,
+        blank=True,
+        null=True,
+    )
+    telephone = models.CharField(
+        max_length=20,
+        validators=[PHONE_NUMBER_VALIDATOR],
+        blank=True,
+        null=True,
+    )
     width = models.DecimalField(
         max_digits=8,
         decimal_places=2,

@@ -389,6 +389,8 @@ def _serialize_holes(
 @transaction.atomic
 def create_quote(
     *,
+    nom: str | None = None,
+    telephone: str | None = None,
     width: Decimal,
     height: Decimal,
     glass_type: GlassType,
@@ -415,6 +417,8 @@ def create_quote(
     )
     selected_options = tuple(options or ())
     quote = Quote.objects.create(
+        nom=nom,
+        telephone=telephone,
         width=width,
         height=height,
         glass_type=glass_type,

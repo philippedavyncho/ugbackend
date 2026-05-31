@@ -46,7 +46,10 @@ class QuoteView(APIView):
         serializer = QuoteRequestSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        result = calculate_quote(**serializer.validated_data)
+        quote_payload = dict(serializer.validated_data)
+        quote_payload.pop("nom", None)
+        quote_payload.pop("telephone", None)
+        result = calculate_quote(**quote_payload)
         response_serializer = QuoteResponseSerializer(result.as_payload())
         return Response(response_serializer.data)
 
@@ -60,10 +63,14 @@ class QuoteSubmissionView(APIView):
         serializer.is_valid(raise_exception=True)
 
         quote_payload = dict(serializer.validated_data)
+        nom = quote_payload.pop("nom", None)
+        telephone = quote_payload.pop("telephone", None)
         calculation = calculate_quote(**quote_payload)
         response_data = QuoteResponseSerializer(calculation.as_payload()).data
         quote, _ = create_quote(
             **quote_payload,
+            nom=nom,
+            telephone=telephone,
             details=response_data["details"],
             calculation=calculation,
         )

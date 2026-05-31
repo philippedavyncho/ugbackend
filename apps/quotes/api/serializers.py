@@ -4,6 +4,7 @@ from rest_framework import serializers
 
 from apps.quotes.models import GlassType, HoleType, Option, WorkType
 from apps.quotes.services import CURRENCY, get_thickness_choices
+from apps.quotes.validators import PHONE_NUMBER_VALIDATOR
 
 
 class GlassTypeSerializer(serializers.ModelSerializer):
@@ -93,6 +94,8 @@ class QuoteHoleRequestSerializer(serializers.Serializer):
 
 
 class QuoteRequestSerializer(serializers.Serializer):
+    nom = serializers.CharField(max_length=150)
+    telephone = serializers.CharField(max_length=20, validators=[PHONE_NUMBER_VALIDATOR])
     width = serializers.DecimalField(
         max_digits=8,
         decimal_places=2,

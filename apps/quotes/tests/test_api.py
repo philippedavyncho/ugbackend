@@ -48,6 +48,8 @@ class QuoteApiTests(APITestCase):
 
     def _build_payload(self):
         return {
+            "nom": "Jean Dupont",
+            "telephone": "07 68 74 30 02",
             "width": "120",
             "height": "150",
             "glass_type": self.glass_type.id,
@@ -101,6 +103,24 @@ class QuoteApiTests(APITestCase):
         self.assertEqual(response.data["details"]["breakdown"][2]["label"], "Travaux Finition atelier test")
         self.assertEqual(response.data["details"]["breakdown"][3]["label"], "Trou pour serrure test x2 (18 mm)")
 
+    def test_post_quote_rejects_missing_nom(self):
+        payload = self._build_payload()
+        payload.pop("nom")
+
+        response = self.client.post(reverse("quote-submit"), payload, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("nom", response.data)
+
+    def test_post_quote_rejects_missing_telephone(self):
+        payload = self._build_payload()
+        payload.pop("telephone")
+
+        response = self.client.post(reverse("quote-submit"), payload, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("telephone", response.data)
+
     def test_post_quote_request_persists_quote_and_returns_reference(self):
         payload = self._build_payload()
 
@@ -113,6 +133,8 @@ class QuoteApiTests(APITestCase):
 
         quote = Quote.objects.get()
         self.assertEqual(quote.reference, response.data["reference"])
+        self.assertEqual(quote.nom, payload["nom"])
+        self.assertEqual(quote.telephone, payload["telephone"])
         self.assertEqual(quote.area, Decimal("1.8000"))
         self.assertEqual(quote.total_price, Decimal("100268.00"))
         self.assertEqual(quote.work_type, self.work_type)

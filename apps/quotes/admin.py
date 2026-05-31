@@ -42,6 +42,8 @@ class HoleTypeAdmin(admin.ModelAdmin):
 class QuoteAdmin(admin.ModelAdmin):
     list_display = (
         "reference",
+        "nom",
+        "telephone",
         "glass_type",
         "work_types_display",
         "width",
@@ -55,6 +57,8 @@ class QuoteAdmin(admin.ModelAdmin):
     list_filter = ("currency", "glass_type", "created_at")
     search_fields = (
         "reference",
+        "nom",
+        "telephone",
         "glass_type__name",
         "work_type__name",
         "work_types__name",
